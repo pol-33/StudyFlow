@@ -1,8 +1,21 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
 
+const normalizeBase = (value) => {
+  const v = typeof value === 'string' ? value : '/'
+  if (v.startsWith('http://') || v.startsWith('https://')) {
+    try {
+      const u = new URL(v)
+      return u.pathname || '/'
+    } catch {
+      return '/'
+    }
+  }
+  return v.startsWith('/') ? v : `/${v}`
+}
+
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHistory(normalizeBase(import.meta.env.BASE_URL)),
   routes: [
     {
       path: '/',
@@ -33,6 +46,10 @@ const router = createRouter({
 
 // Guardia de navegación global
 router.beforeEach((to, from, next) => {
+  if (to.path.startsWith('http://') || to.path.startsWith('https://')) {
+    next('/')
+    return
+  }
   const authStore = useAuthStore()
   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth)
 
