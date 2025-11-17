@@ -57,7 +57,7 @@ El backend está configurado para aceptar peticiones desde:
 - `http://localhost:5173`
 - `http://127.0.0.1:5173`
 
-Si necesitas añadir más orígenes, edita `backend/studyflow/settings.py` en la sección `CORS_ALLOWED_ORIGINS`.
+Si necesitas añadir más orígenes, edita `CORS_ALLOWED_ORIGINS` en el fichero de entorno.
 
 ## 🎯 Uso de la Aplicación
 
