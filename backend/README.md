@@ -108,22 +108,46 @@ backend/
 ├── api/
 │   ├── migrations/
 │   ├── __init__.py
-│   ├── admin.py           # Configuración del panel admin
-│   ├── models.py          # Modelos: Project, Task, Document
-│   ├── serializers.py     # Serializadores DRF
-│   ├── views.py           # ViewSets y vistas
-│   ├── permissions.py     # Permisos personalizados
-│   └── urls.py            # Rutas de la API
+│   ├── admin.py
+│   ├── models.py
+│   ├── serializers.py
+│   ├── views.py
+│   ├── permissions.py
+│   ├── urls.py
+│   └── tests/
+│       ├── __init__.py
+│       └── test_smoke.py
 ├── studyflow/
 │   ├── __init__.py
-│   ├── settings.py        # Configuración del proyecto
-│   ├── urls.py            # URLs principales
-│   └── wsgi.py
+│   ├── asgi.py
+│   ├── urls.py
+│   ├── wsgi.py
+│   └── settings/
+│       ├── __init__.py    # Autoselección entre dev y prod según variables de entorno
+│       ├── base.py        # Configuración compartida
+│       ├── dev.py         # Configuración de desarrollo
+│       └── prod.py        # Configuración de producción
+├── templates/             # Templates globales
+├── static/                # Archivos estáticos globales
 ├── media/                 # Archivos subidos (creado automáticamente)
 ├── manage.py
+├── entrypoint.sh
 ├── requirements.txt
 └── README.md
 ```
+
+### Gestión de Settings
+
+- `studyflow.settings` es ahora un paquete con separación por entorno.
+- Selección automática:
+  - Si `DJANGO_ENV=production` → se usa `prod.py`.
+  - En otro caso, si `DEBUG=True` → se usa `dev.py`; si `DEBUG=False` → `prod.py`.
+- `base.py` contiene la configuración común; `dev.py` y `prod.py` la especializan.
+
+### Archivos Estáticos y Templates
+
+- `STATIC_URL=/static/`, `STATICFILES_DIRS=[backend/static]`, `STATIC_ROOT=backend/staticfiles`.
+- `TEMPLATES.DIRS` incluye `backend/templates` para plantillas globales.
 
 ## 🌐 API Endpoints
 
