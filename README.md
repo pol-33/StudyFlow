@@ -147,4 +147,4 @@ Frontend: `http://localhost:5173`
 
 
 ## License
-No explicit license file is currently included. Please add a license (e.g., MIT) to clarify usage and contributions.
+Este proyecto está bajo la licencia especificada en el archivo LICENSE.
