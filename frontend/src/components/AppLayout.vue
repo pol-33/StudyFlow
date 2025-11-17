@@ -41,7 +41,17 @@
       <!-- Header -->
       <el-header class="app-header">
         <div class="header-content">
-          <h2 class="page-title">{{ pageTitle }}</h2>
+          <div class="header-left">
+            <el-button
+              v-if="projectStore.currentProject"
+              :icon="ArrowLeft"
+              @click="goBackToDashboard"
+              text
+            >
+              Volver al Dashboard
+            </el-button>
+            <h2 class="page-title">{{ pageTitle }}</h2>
+          </div>
           <div class="header-actions">
             <el-dropdown @command="handleUserMenuCommand">
               <el-button circle>
@@ -82,6 +92,7 @@ import {
   SwitchButton,
   Expand,
   Fold,
+  ArrowLeft,
 } from '@element-plus/icons-vue'
 import { useAuthStore } from '@/stores/authStore'
 import { useProjectStore } from '@/stores/projectStore'
@@ -105,6 +116,14 @@ const activeMenu = ref('dashboard')
 
 const handleMenuClick = (menu) => {
   activeMenu.value = menu
+  if (menu === 'dashboard') {
+    goBackToDashboard()
+  }
+}
+
+const goBackToDashboard = () => {
+  projectStore.clearCurrentProject()
+  taskStore.clearTasks()
 }
 
 const handleUserMenuCommand = async (command) => {
@@ -188,6 +207,12 @@ const handleUserMenuCommand = async (command) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
 }
 
 .page-title {

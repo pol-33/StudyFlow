@@ -35,6 +35,16 @@
       >
         <el-icon><Folder /></el-icon>
         <span>{{ project.name }}</span>
+        <!-- Progress bar for every project using tasks_count and completed_tasks_count -->
+        <template v-if="project.tasks_count > 0">
+          <el-progress
+            :percentage="Math.round((project.completed_tasks_count / project.tasks_count) * 100)"
+            :stroke-width="8"
+            status="success"
+            style="margin-top: 4px; width: 90%; margin-left: 5%;"
+            :show-text="false"
+          />
+        </template>
       </el-menu-item>
 
       <el-empty
@@ -88,7 +98,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, computed, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Plus, Folder } from '@element-plus/icons-vue'
 import { useProjectStore } from '@/stores/projectStore'

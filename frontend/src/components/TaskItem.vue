@@ -87,6 +87,7 @@
       v-model="editDialogVisible"
       title="Editar Tarea"
       width="600px"
+      append-to-body="false"
     >
       <el-form
         ref="editFormRef"
@@ -151,6 +152,7 @@
       v-model="documentsDialogVisible"
       title="Documentos de la Tarea"
       width="700px"
+      append-to-body="false"
     >
       <DocumentManager
         :project-id="projectId"

@@ -23,7 +23,22 @@
             />
           </div>
         </div>
+
       </template>
+
+      <!-- Project Progress Bar -->
+      <div v-if="projectStore.currentProject && projectStore.currentProject.tasks_count > 0" class="project-progress">
+        <el-progress
+          :percentage="detailProgressPercentage"
+          :text-inside="true"
+          :stroke-width="22"
+          status="success"
+        >
+        </el-progress>
+        <div class="progress-label">
+          {{ projectStore.currentProject.completed_tasks_count }} / {{ projectStore.currentProject.tasks_count }} tareas completadas
+        </div>
+      </div>
 
       <!-- Task List Component -->
       <TaskList :project-id="projectStore.currentProject.id" />
@@ -75,7 +90,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, watch } from 'vue'
+import { ref, reactive, watch, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Edit, Delete } from '@element-plus/icons-vue'
 import { useProjectStore } from '@/stores/projectStore'
@@ -84,6 +99,34 @@ import TaskList from './TaskList.vue'
 
 const projectStore = useProjectStore()
 const taskStore = useTaskStore()
+
+
+// Progress percentage using projectStore.currentProject counts
+const detailProgressPercentage = computed(() => {
+  const project = projectStore.currentProject
+  if (!project || !project.tasks_count) return 0
+  return Math.round((project.completed_tasks_count / project.tasks_count) * 100)
+})
+
+// Keep projectStore.currentProject counts in sync with taskStore
+watch(
+  () => taskStore.tasks.map(t => t.is_completed),
+  () => {
+    const current = projectStore.currentProject
+    if (!current) return
+    const total = taskStore.tasks.length
+    const completed = taskStore.tasks.filter(t => t.is_completed).length
+    projectStore.currentProject.tasks_count = total
+    projectStore.currentProject.completed_tasks_count = completed
+    // Also update in projects array for sidebar sync
+    const idx = projectStore.projects.findIndex(p => p.id === current.id)
+    if (idx !== -1) {
+      projectStore.projects[idx].tasks_count = total
+      projectStore.projects[idx].completed_tasks_count = completed
+    }
+  },
+  { deep: true }
+)
 
 const editDialogVisible = ref(false)
 const editFormRef = ref(null)
@@ -190,5 +233,15 @@ const handleDeleteProject = async () => {
 .header-actions {
   display: flex;
   gap: 8px;
+}
+
+.project-progress {
+  margin: 24px 0 16px 0;
+}
+.progress-label {
+  margin-top: 4px;
+  color: #606266;
+  font-size: 14px;
+  text-align: right;
 }
 </style>
