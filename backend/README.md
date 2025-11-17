@@ -76,6 +76,15 @@ El servidor estará disponible en: `http://127.0.0.1:8000/`
 
 ## ⚙️ Configuración
 
+### Variables de Entorno
+
+Crea un archivo `.env` en la raíz del backend (puedes copiar `.env.example`):
+
+```bash
+cp .env.example .env
+```
+
+
 ### Media Files
 
 Los archivos subidos se almacenan en la carpeta `media/documents/`. La configuración ya está lista en `settings.py`:
