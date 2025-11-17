@@ -41,7 +41,7 @@ class DocumentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Document
         fields = ['id', 'file_name', 'file', 'file_url', 'uploaded_at', 'task']
-        read_only_fields = ['uploaded_at']
+        read_only_fields = ['uploaded_at', 'task']
     
     def get_file_url(self, obj):
         """Return the URL of the file"""
@@ -64,7 +64,7 @@ class TaskSerializer(serializers.ModelSerializer):
             'id', 'title', 'description', 'created_at', 'due_date',
             'priority', 'is_completed', 'project', 'documents', 'documents_count'
         ]
-        read_only_fields = ['created_at']
+        read_only_fields = ['created_at', 'project']
     
     def get_documents_count(self, obj):
         """Return the number of documents attached to this task"""
