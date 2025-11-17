@@ -68,8 +68,8 @@ docker compose down
 ## Configuration
 ### Frontend (`frontend/.env`)
 - `VITE_API_BASE_URL`: Base URL for the backend API used by `src/services/api.js`.
-  - Dev default via Compose: `http://localhost:8000`
-  - Prod build arg via Compose: `http://localhost:8000`
+  - Defined in `frontend/.env`, loaded by Vite at build and dev time.
+  - Compose now references `frontend/.env` via `env_file` and validates presence before starting.
 
 ### Backend (`backend/.env`)
 - `SECRET_KEY`: Django secret; required for production.
@@ -78,6 +78,18 @@ docker compose down
 - `CORS_ALLOWED_ORIGINS`: Comma-separated allowed origins.
 - `ACCESS_TOKEN_LIFETIME_MINUTES`, `REFRESH_TOKEN_LIFETIME_DAYS`: SimpleJWT lifetimes.
 - Media: `MEDIA_ROOT` defaults to `backend/media` and is persisted via a Docker volume in dev.
+
+### Environment Loading & Precedence
+- Each service has its own `.env` file: `backend/.env`, `frontend/.env`.
+- Compose loads service envs with `env_file`. In Compose, `environment` entries override `env_file` values.
+- Inside the backend, Django loads `backend/.env` via `python-dotenv`.
+- Frontend dev and build read `frontend/.env` via Vite.
+- Host shell env can override Compose variables; prefer `env_file` for reproducibility.
+
+### Validation
+- Backend entrypoint validates critical variables:
+  - Fails if `DEBUG=False` and `SECRET_KEY` is missing.
+- Frontend dev service checks that `VITE_API_BASE_URL` exists in `frontend/.env` before starting.
 
 ### Notes
 - CORS defaults allow local frontend dev URLs (`http://localhost:5173`, `http://127.0.0.1:5173`) and prod (`http://localhost:8080`) via Compose.

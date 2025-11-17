@@ -15,8 +15,6 @@ ENV NODE_ENV=production
 COPY package*.json ./
 RUN npm ci --no-audit --no-fund
 COPY . .
-ARG VITE_API_BASE_URL
-ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
 RUN npm run build
 
 FROM nginx:alpine AS prod

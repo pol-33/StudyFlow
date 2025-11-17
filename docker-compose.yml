@@ -5,6 +5,8 @@ services:
       target: dev
     profiles:
       - dev
+    env_file:
+      - ./backend/.env
     environment:
       DEBUG: "True"
       ALLOWED_HOSTS: "localhost,127.0.0.1"
@@ -27,8 +29,9 @@ services:
       target: dev
     profiles:
       - dev
-    environment:
-      VITE_API_BASE_URL: "http://localhost:8000"
+    env_file:
+      - ./frontend/.env
+    command: ["sh","-c","test -f .env && grep -Eq '^VITE_API_BASE_URL=' .env || { echo 'VITE_API_BASE_URL missing in frontend/.env'; exit 1; }; npm run dev -- --host 0.0.0.0"]
     ports:
       - "5173:5173"
     volumes:
@@ -50,6 +53,8 @@ services:
       target: prod
     profiles:
       - prod
+    env_file:
+      - ./backend/.env
     environment:
       DEBUG: "False"
       ALLOWED_HOSTS: "localhost,127.0.0.1"
@@ -67,8 +72,6 @@ services:
     build:
       context: ./frontend
       target: prod
-      args:
-        VITE_API_BASE_URL: "http://localhost:8000"
     profiles:
       - prod
     ports:
