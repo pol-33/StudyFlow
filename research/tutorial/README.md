@@ -1,4 +1,4 @@
-Aquí Este documento está estructurado para seguir el flujo de las diapositivas paso a paso. Recomendamos leerlo con las transparencias abiertas para una mejor comprensión e imagenes del proceso.
+Este documento está estructurado para seguir el flujo de las diapositivas paso a paso. Recomendamos leerlo con las transparencias abiertas para una mejor comprensión e imagenes del proceso.
 
 ---
 
