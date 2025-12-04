@@ -167,8 +167,10 @@ const handleUserMenuCommand = async (command) => {
 }
 
 .aside-header {
-  padding: 20px;
-  text-align: center;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border-bottom: 1px solid #e4e7ed;
 }
 
