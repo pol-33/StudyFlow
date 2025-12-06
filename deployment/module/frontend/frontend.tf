@@ -1,4 +1,4 @@
-resource "kubernetes_deployment" "backend" {
+resource "kubernetes_deployment" "frontend" {
     metadata {
         name      = "${var.instance_name}"
         namespace = var.namespace
@@ -9,12 +9,13 @@ resource "kubernetes_deployment" "backend" {
 
     spec {
         replicas = 1
-    
+
         selector {
           match_labels = {
             App = "${var.instance_name}"
           }
         }
+
         template {
           metadata {
             labels = {
@@ -24,15 +25,14 @@ resource "kubernetes_deployment" "backend" {
           spec {
             container {
               image = "${var.image_name}:latest"
-              name  = "${var.instance_name}-backend"
+              name  = "${var.instance_name}"
               image_pull_policy = "IfNotPresent"
-              
+
               env_from {
                 config_map_ref {
-                  name = kubernetes_config_map.backend-config.metadata[0].name
+                  name = kubernetes_config_map.frontend-config.metadata[0].name
                 }
               }
-
               port {
                 container_port = 8080
                 name = "http"
@@ -44,18 +44,13 @@ resource "kubernetes_deployment" "backend" {
     }
 }
 
-resource "kubernetes_config_map" "backend-config" {
-    metadata {
-        name      = "${var.instance_name}-backend-config"
-        namespace = var.namespace
-    }  
+resource "kubernetes_config_map" "frontend-config" {
+  metadata {
+    name      = "${var.instance_name}-frontend-config"
+    namespace = var.namespace
+  }
 
-    data = {
-        "SECRET_KEY" = var.secret_key
-        "DEBUG" = var.debug
-        "ALLOWED_HOSTS" = var.allowed_hosts
-        "CORS_ALLOWED_ORIGINS" = var.cors_allowed_origins
-        "ACCESS_TOKEN_LIFETIME_MINUTES" = var.access_token_lifetime_minutes
-        "REFRESH_TOKEN_LIFETIME_DAYS" = var.refresh_token_lifetime_days
-    }
+  data = {
+    "VITE_API_BASE_URL" = var.vite_api_base_url
+  }
 }
