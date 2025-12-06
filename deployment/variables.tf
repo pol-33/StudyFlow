@@ -44,6 +44,6 @@ variable "refresh_token_lifetime_days" {
 }
 
 variable "vite_api_base_url" {
-  default = "http://localhost:8000"
+  default = "http://localhost"
   description = "The base URL for the backend API, used by the frontend to make requests."
 }

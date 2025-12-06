@@ -34,7 +34,7 @@ resource "kubernetes_deployment" "frontend" {
                 }
               }
               port {
-                container_port = 8080
+                container_port = 5173
                 name = "http"
                 protocol = "TCP"
               }
