@@ -208,3 +208,17 @@ __marimo__/
 
 # macOS
 .DS_Store
+.terraform/
+terraform.tfstate.d/
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+*.tfvars
+*.auto.tfvars
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+*.tfplan
+*.lock.*
