@@ -72,6 +72,7 @@ class Task(models.Model):
         default='Medium'
     )
     is_completed = models.BooleanField(default=False)
+    notification_sent = models.BooleanField(default=False)
     project = models.ForeignKey(
         Project,
         on_delete=models.CASCADE,
