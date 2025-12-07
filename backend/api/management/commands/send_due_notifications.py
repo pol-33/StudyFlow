@@ -31,7 +31,7 @@ class Command(BaseCommand):
             subject = f"Reminder: Task '{task.title}' is due soon!"
             message = f"""Hello {user.username},
 
-This is a reminder that your task "{task.title}" in project "{task.project.name}" is due on {task.due_date.strftime('%Y-%m-%d %H:%M')}.
+This is a reminder that your task "{task.title}" in project "{task.project.name}" is due on {task.due_date.strftime('%Y-%m-%d %H:%M')} UTC.
 
 Please make sure to complete it on time.
 
