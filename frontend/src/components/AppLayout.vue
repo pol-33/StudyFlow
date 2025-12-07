@@ -62,6 +62,10 @@
                   <el-dropdown-item disabled>
                     {{ authStore.user?.username || 'Usuario' }}
                   </el-dropdown-item>
+                  <el-dropdown-item command="settings">
+                    <el-icon><Setting /></el-icon>
+                    Configuración
+                  </el-dropdown-item>
                   <el-dropdown-item divided command="logout">
                     <el-icon><SwitchButton /></el-icon>
                     Cerrar Sesión
@@ -93,6 +97,7 @@ import {
   Expand,
   Fold,
   ArrowLeft,
+  Setting,
 } from '@element-plus/icons-vue'
 import { useAuthStore } from '@/stores/authStore'
 import { useProjectStore } from '@/stores/projectStore'
@@ -124,9 +129,15 @@ const handleMenuClick = (menu) => {
 const goBackToDashboard = () => {
   projectStore.clearCurrentProject()
   taskStore.clearTasks()
+  router.push('/dashboard')
 }
 
 const handleUserMenuCommand = async (command) => {
+  if (command === 'settings') {
+    router.push('/settings')
+    return
+  }
+  
   if (command === 'logout') {
     try {
       await ElMessageBox.confirm(

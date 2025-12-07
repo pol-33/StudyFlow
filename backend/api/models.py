@@ -29,6 +29,20 @@ def document_upload_path(instance, filename):
     return f'documents/{date_path}/{new_filename}'
 
 
+class UserProfile(models.Model):
+    """
+    Model to store additional user information.
+    """
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='profile'
+    )
+    email_notifications_enabled = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"Profile for {self.user.username}"
+
 
 class Project(models.Model):
     """
@@ -152,3 +166,15 @@ def delete_old_file_on_update(sender, instance, **kwargs):
     if old_file and old_file != new_file:
         if os.path.isfile(old_file.path):
             os.remove(old_file.path)
+
+
+@receiver(models.signals.post_save, sender=settings.AUTH_USER_MODEL)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        UserProfile.objects.create(user=instance)
+
+
+@receiver(models.signals.post_save, sender=settings.AUTH_USER_MODEL)
+def save_user_profile(sender, instance, **kwargs):
+    instance.profile.save()
+

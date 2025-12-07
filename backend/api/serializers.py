@@ -1,6 +1,39 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import Project, Task, Document
+from .models import Project, Task, Document, UserProfile
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        fields = ['email_notifications_enabled']
+
+
+class UserSettingsSerializer(serializers.ModelSerializer):
+    """Serializer for User settings (username, email, notifications)"""
+    email_notifications_enabled = serializers.BooleanField(source='profile.email_notifications_enabled')
+
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'email_notifications_enabled']
+        read_only_fields = ['id']
+
+    def update(self, instance, validated_data):
+        profile_data = validated_data.pop('profile', {})
+        email_notifications_enabled = profile_data.get('email_notifications_enabled')
+
+        # Update User fields
+        instance.username = validated_data.get('username', instance.username)
+        instance.email = validated_data.get('email', instance.email)
+        instance.save()
+
+        # Update UserProfile fields
+        if email_notifications_enabled is not None:
+            profile, created = UserProfile.objects.get_or_create(user=instance)
+            profile.email_notifications_enabled = email_notifications_enabled
+            profile.save()
+
+        return instance
 
 
 class UserSerializer(serializers.ModelSerializer):

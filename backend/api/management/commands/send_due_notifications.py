@@ -13,17 +13,24 @@ class Command(BaseCommand):
         tomorrow = now + timedelta(days=1)
         
         # Find tasks due in the next 24 hours that haven't been notified and are not completed
+        # Also check if the user has enabled email notifications
         tasks = Task.objects.filter(
             due_date__gt=now,
             due_date__lte=tomorrow,
             is_completed=False,
             notification_sent=False
-        )
+        ).select_related('project__owner__profile')
         
         self.stdout.write(f"Found {tasks.count()} tasks to notify.")
         
         for task in tasks:
             user = task.project.owner
+            
+            # Check if user has profile and notifications enabled
+            if hasattr(user, 'profile') and not user.profile.email_notifications_enabled:
+                self.stdout.write(f"User {user.username} has disabled notifications. Skipping.")
+                continue
+
             if not user.email:
                 self.stdout.write(self.style.WARNING(f"User {user.username} has no email. Skipping."))
                 continue
