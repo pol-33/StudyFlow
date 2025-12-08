@@ -40,8 +40,8 @@ class DocumentSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Document
-        fields = ['id', 'file_name', 'file', 'file_url', 'uploaded_at', 'task']
-        read_only_fields = ['uploaded_at', 'task']
+        fields = ['id', 'file_name', 'file', 'file_url', 'uploaded_at', 'task', 'file_size']
+        read_only_fields = ['uploaded_at', 'task', 'file_size']
     
     def get_file_url(self, obj):
         """Return the URL of the file"""
@@ -51,6 +51,33 @@ class DocumentSerializer(serializers.ModelSerializer):
                 return request.build_absolute_uri(obj.file.url)
             return obj.file.url
         return None
+    
+    def validate(self, attrs):
+        """Validate that the file is not a duplicate."""
+        file = attrs.get('file')
+        task = self.context.get('task')  # Task from view context
+        
+        if file and task:
+            # Calculate hash of uploaded file
+            import hashlib
+            hash_sha256 = hashlib.sha256()
+            for chunk in file.chunks():
+                hash_sha256.update(chunk)
+            file_hash = hash_sha256.hexdigest()
+            file.seek(0)  # Reset file pointer
+            
+            # Check if a document with same hash exists in this task
+            duplicate = Document.objects.filter(
+                task=task,
+                file_hash=file_hash
+            ).first()
+            
+            if duplicate:
+                raise serializers.ValidationError({
+                    'file': f'This file has already been uploaded as "{duplicate.file_name}".'
+                })
+        
+        return attrs
 
 
 class TaskSerializer(serializers.ModelSerializer):

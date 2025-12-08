@@ -19,9 +19,10 @@ Backend completo para la aplicación de gestión de proyectos académicos **Stud
 - ✅ CRUD completo para Proyectos, Tareas y Documentos
 - ✅ Endpoints anidados (nested resources)
 - ✅ Permisos personalizados (solo propietarios pueden acceder a sus recursos)
-- ✅ Subida y gestión de archivos
+- ✅ Subida y gestión de archivos (local o AWS S3)
+- ✅ Detección de archivos duplicados por hash
 - ✅ Validación de datos robusta
-- ✅ Base de datos SQLite
+- ✅ Base de datos SQLite/PostgreSQL
 - ✅ Panel de administración de Django
 
 ## 🛠 Tecnologías
@@ -31,7 +32,9 @@ Backend completo para la aplicación de gestión de proyectos académicos **Stud
 - **Django REST Framework**: 3.16.1
 - **djangorestframework-simplejwt**: 5.5.1
 - **drf-nested-routers**: 0.95.0
-- **Base de datos**: SQLite3
+- **boto3**: 1.35.77 (AWS S3)
+- **django-storages**: 1.14.4 (Storage backends)
+- **Base de datos**: SQLite3/PostgreSQL
 
 ## 📦 Instalación
 
@@ -85,14 +88,36 @@ cp .env.example .env
 ```
 
 
-### Media Files
+### File Storage
 
-Los archivos subidos se almacenan en la carpeta `media/documents/`. La configuración ya está lista en `settings.py`:
+La aplicación soporta almacenamiento local y AWS S3 para documentos:
 
-```python
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+#### Almacenamiento Local (Por Defecto)
+- Los archivos se guardan en `backend/media/documents/YYYY_MM_DD/`
+- Configurar `USE_S3=False` o omitir la variable en `.env`
+- Estructura: `documents/2025_12_09/timestamp_uuid_filename.pdf`
+
+#### Almacenamiento S3
+- Los archivos se suben a AWS S3
+- Configurar `USE_S3=True` en `.env`
+- Configurar credenciales AWS (ver Variables de Entorno)
+- Misma estructura de carpetas en S3
+- URLs firmadas con expiración de 1 hora
+
+**Variables de entorno requeridas para S3:**
+```env
+USE_S3=True
+AWS_ACCESS_KEY_ID=your-access-key-id
+AWS_SECRET_ACCESS_KEY=your-secret-access-key
+AWS_STORAGE_BUCKET_NAME=your-bucket-name
+AWS_S3_REGION_NAME=eu-south-2
 ```
+
+**Características:**
+- ✅ Detección de duplicados por hash SHA256
+- ✅ Eliminación automática de archivos vacíos
+- ✅ Nombres únicos con timestamp y UUID
+- ✅ Compatible con Django 5.x `STORAGES` setting
 
 ### JWT Configuration
 
