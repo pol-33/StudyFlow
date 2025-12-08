@@ -60,7 +60,7 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import api from '@/services/api'
+import authService from '@/services/authService'
 import { useAuthStore } from '@/stores/authStore'
 
 const router = useRouter()
@@ -91,18 +91,17 @@ const goBack = () => {
 
 const fetchSettings = async () => {
   loading.value = true
-  try {
-    const response = await api.get('/api/auth/settings/')
+  const response = await authService.getSettings()
+  loading.value = false
+  if (response.status >= 200 && response.status < 300) {
     form.value = {
       username: response.data.username,
       email: response.data.email,
       email_notifications_enabled: response.data.email_notifications_enabled
     }
-  } catch (error) {
+  } else {
     ElMessage.error('Error al cargar la configuración')
-    console.error(error)
-  } finally {
-    loading.value = false
+    console.error(response)
   }
 }
 
@@ -112,8 +111,9 @@ const saveSettings = async () => {
   await formRef.value.validate(async (valid) => {
     if (valid) {
       loading.value = true
-      try {
-        const response = await api.put('/api/auth/settings/', form.value)
+      const response = await authService.updateSettings(form.value)
+      loading.value = false
+      if (response.status >= 200 && response.status < 300) {
         ElMessage.success('Configuración actualizada correctamente')
         
         // Update auth store if username changed
@@ -121,11 +121,9 @@ const saveSettings = async () => {
           authStore.user.username = response.data.username
           authStore.user.email = response.data.email
         }
-      } catch (error) {
+      } else {
         ElMessage.error('Error al guardar la configuración')
-        console.error(error)
-      } finally {
-        loading.value = false
+        console.error(response)
       }
     }
   })
