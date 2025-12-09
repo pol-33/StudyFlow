@@ -167,3 +167,15 @@ CORS_ALLOW_METHODS = [
 CORS_ALLOW_HEADERS = [
     'accept','accept-encoding','authorization','content-type','dnt','origin','user-agent','x-csrftoken','x-requested-with',
 ]
+
+# AWS Configuration
+AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
+AWS_DEFAULT_REGION_NAME = os.getenv('AWS_DEFAULT_REGION_NAME', 'eu-south-2')
+
+# Email Configuration (AWS SES)
+EMAIL_BACKEND = 'django_ses.SESBackend'
+
+AWS_SES_REGION_NAME = os.getenv('AWS_SES_REGION_NAME', 'eu-west-3')
+AWS_SES_REGION_ENDPOINT = os.getenv('AWS_SES_REGION_ENDPOINT', 'email.eu-west-3.amazonaws.com')
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'noreply@polplana.work')

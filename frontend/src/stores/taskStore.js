@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
-import { tasksAPI, documentsAPI } from '@/services/api'
+import taskService from '@/services/taskService'
+import documentService from '@/services/documentService'
 
 export const useTaskStore = defineStore('task', {
   state: () => ({
@@ -26,38 +27,35 @@ export const useTaskStore = defineStore('task', {
     async fetchTasks(projectId) {
       this.loading = true
       this.error = null
-      try {
-        const response = await tasksAPI.list(projectId)
+      const response = await taskService.list(projectId)
+      this.loading = false
+      if (response.status >= 200 && response.status < 300) {
         this.tasks = response.data
         return response.data
-      } catch (error) {
-        this.error = error.message
-        throw error
-      } finally {
-        this.loading = false
       }
+      this.error = response.data?.detail || 'Error fetching tasks'
+      throw response
     },
 
     async createTask(projectId, taskData) {
       this.loading = true
       this.error = null
-      try {
-        const response = await tasksAPI.create(projectId, taskData)
+      const response = await taskService.create(projectId, taskData)
+      this.loading = false
+      if (response.status >= 200 && response.status < 300) {
         this.tasks.push(response.data)
         return response.data
-      } catch (error) {
-        this.error = error.message
-        throw error
-      } finally {
-        this.loading = false
       }
+      this.error = response.data?.detail || 'Error creating task'
+      throw response
     },
 
     async updateTask(projectId, taskId, taskData) {
       this.loading = true
       this.error = null
-      try {
-        const response = await tasksAPI.update(projectId, taskId, taskData)
+      const response = await taskService.update(projectId, taskId, taskData)
+      this.loading = false
+      if (response.status >= 200 && response.status < 300) {
         const index = this.tasks.findIndex((t) => t.id === taskId)
         if (index !== -1) {
           this.tasks[index] = response.data
@@ -66,30 +64,26 @@ export const useTaskStore = defineStore('task', {
           this.currentTask = response.data
         }
         return response.data
-      } catch (error) {
-        this.error = error.message
-        throw error
-      } finally {
-        this.loading = false
       }
+      this.error = response.data?.detail || 'Error updating task'
+      throw response
     },
 
     async deleteTask(projectId, taskId) {
       this.loading = true
       this.error = null
-      try {
-        await tasksAPI.delete(projectId, taskId)
+      const response = await taskService.delete(projectId, taskId)
+      this.loading = false
+      if (response.status >= 200 && response.status < 300) {
         this.tasks = this.tasks.filter((t) => t.id !== taskId)
         if (this.currentTask?.id === taskId) {
           this.currentTask = null
           this.documents = []
         }
-      } catch (error) {
-        this.error = error.message
-        throw error
-      } finally {
-        this.loading = false
+        return
       }
+      this.error = response.data?.detail || 'Error deleting task'
+      throw response
     },
 
     async toggleTaskCompletion(projectId, taskId, isCompleted) {
@@ -104,45 +98,40 @@ export const useTaskStore = defineStore('task', {
     async fetchDocuments(projectId, taskId) {
       this.loading = true
       this.error = null
-      try {
-        const response = await documentsAPI.list(projectId, taskId)
+      const response = await documentService.list(projectId, taskId)
+      this.loading = false
+      if (response.status >= 200 && response.status < 300) {
         this.documents = response.data
         return response.data
-      } catch (error) {
-        this.error = error.message
-        throw error
-      } finally {
-        this.loading = false
       }
+      this.error = response.data?.detail || 'Error fetching documents'
+      throw response
     },
 
     async uploadDocument(projectId, taskId, formData) {
       this.loading = true
       this.error = null
-      try {
-        const response = await documentsAPI.upload(projectId, taskId, formData)
+      const response = await documentService.upload(projectId, taskId, formData)
+      this.loading = false
+      if (response.status >= 200 && response.status < 300) {
         this.documents.push(response.data)
         return response.data
-      } catch (error) {
-        this.error = error.message
-        throw error
-      } finally {
-        this.loading = false
       }
+      this.error = response.data?.detail || 'Error uploading document'
+      throw response
     },
 
     async deleteDocument(projectId, taskId, documentId) {
       this.loading = true
       this.error = null
-      try {
-        await documentsAPI.delete(projectId, taskId, documentId)
+      const response = await documentService.delete(projectId, taskId, documentId)
+      this.loading = false
+      if (response.status >= 200 && response.status < 300) {
         this.documents = this.documents.filter((d) => d.id !== documentId)
-      } catch (error) {
-        this.error = error.message
-        throw error
-      } finally {
-        this.loading = false
+        return
       }
+      this.error = response.data?.detail || 'Error deleting document'
+      throw response
     },
 
     selectTask(task) {

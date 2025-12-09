@@ -138,7 +138,6 @@ const selectProject = async (project) => {
     // Cargar tareas del proyecto seleccionado
     await taskStore.fetchTasks(project.id)
     emit('project-selected', project)
-    ElMessage.success(`Proyecto "${project.name}" seleccionado`)
   } catch (error) {
     console.error('Error selecting project:', error)
     ElMessage.error('Error al cargar el proyecto')

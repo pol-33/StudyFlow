@@ -64,6 +64,20 @@ def document_upload_path(instance, filename):
     return f'documents/{date_folder}/{new_filename}'
 
 
+class UserProfile(models.Model):
+    """
+    Model to store additional user information.
+    """
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='profile'
+    )
+    email_notifications_enabled = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"Profile for {self.user.username}"
+
 
 class Project(models.Model):
     """
@@ -100,6 +114,7 @@ class Task(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     due_date = models.DateTimeField(null=True, blank=True)
     priority = models.CharField(
         max_length=10,
@@ -107,6 +122,7 @@ class Task(models.Model):
         default='Medium'
     )
     is_completed = models.BooleanField(default=False)
+    notification_sent = models.BooleanField(default=False)
     project = models.ForeignKey(
         Project,
         on_delete=models.CASCADE,
@@ -235,4 +251,16 @@ def delete_old_file_on_update(sender, instance, **kwargs):
         # Clean up empty directories (local storage only)
         if old_file_path:
             cleanup_empty_dirs(old_file_path)
+
+
+@receiver(models.signals.post_save, sender=settings.AUTH_USER_MODEL)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        UserProfile.objects.create(user=instance)
+
+
+@receiver(models.signals.post_save, sender=settings.AUTH_USER_MODEL)
+def save_user_profile(sender, instance, **kwargs):
+    instance.profile.save()
+
 

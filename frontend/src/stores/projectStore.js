@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { projectsAPI } from '@/services/api'
+import projectService from '@/services/projectService'
 
 export const useProjectStore = defineStore('project', {
   state: () => ({
@@ -19,38 +19,35 @@ export const useProjectStore = defineStore('project', {
     async fetchProjects() {
       this.loading = true
       this.error = null
-      try {
-        const response = await projectsAPI.list()
+      const response = await projectService.list()
+      this.loading = false
+      if (response.status >= 200 && response.status < 300) {
         this.projects = response.data
         return response.data
-      } catch (error) {
-        this.error = error.message
-        throw error
-      } finally {
-        this.loading = false
       }
+      this.error = response.data?.detail || 'Error fetching projects'
+      throw response
     },
 
     async createProject(projectData) {
       this.loading = true
       this.error = null
-      try {
-        const response = await projectsAPI.create(projectData)
+      const response = await projectService.create(projectData)
+      this.loading = false
+      if (response.status >= 200 && response.status < 300) {
         this.projects.push(response.data)
         return response.data
-      } catch (error) {
-        this.error = error.message
-        throw error
-      } finally {
-        this.loading = false
       }
+      this.error = response.data?.detail || 'Error creating project'
+      throw response
     },
 
     async updateProject(projectId, projectData) {
       this.loading = true
       this.error = null
-      try {
-        const response = await projectsAPI.update(projectId, projectData)
+      const response = await projectService.update(projectId, projectData)
+      this.loading = false
+      if (response.status >= 200 && response.status < 300) {
         const index = this.projects.findIndex((p) => p.id === projectId)
         if (index !== -1) {
           this.projects[index] = response.data
@@ -59,44 +56,38 @@ export const useProjectStore = defineStore('project', {
           this.currentProject = response.data
         }
         return response.data
-      } catch (error) {
-        this.error = error.message
-        throw error
-      } finally {
-        this.loading = false
       }
+      this.error = response.data?.detail || 'Error updating project'
+      throw response
     },
 
     async deleteProject(projectId) {
       this.loading = true
       this.error = null
-      try {
-        await projectsAPI.delete(projectId)
+      const response = await projectService.delete(projectId)
+      this.loading = false
+      if (response.status >= 200 && response.status < 300) {
         this.projects = this.projects.filter((p) => p.id !== projectId)
         if (this.currentProject?.id === projectId) {
           this.currentProject = null
         }
-      } catch (error) {
-        this.error = error.message
-        throw error
-      } finally {
-        this.loading = false
+        return
       }
+      this.error = response.data?.detail || 'Error deleting project'
+      throw response
     },
 
     async selectProject(projectId) {
       this.loading = true
       this.error = null
-      try {
-        const response = await projectsAPI.get(projectId)
+      const response = await projectService.get(projectId)
+      this.loading = false
+      if (response.status >= 200 && response.status < 300) {
         this.currentProject = response.data
         return response.data
-      } catch (error) {
-        this.error = error.message
-        throw error
-      } finally {
-        this.loading = false
       }
+      this.error = response.data?.detail || 'Error fetching project'
+      throw response
     },
 
     clearCurrentProject() {

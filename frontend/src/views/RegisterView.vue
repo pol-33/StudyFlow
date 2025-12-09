@@ -192,7 +192,7 @@ const handleRegister = async () => {
         console.error('Register error:', error)
         
         // Manejar errores específicos del backend
-        const errorData = error.response?.data
+        const errorData = error.data
         if (errorData) {
           if (errorData.username) {
             ElMessage.error(`Usuario: ${errorData.username[0]}`)

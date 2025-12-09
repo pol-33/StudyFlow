@@ -105,7 +105,7 @@ const handleLogin = async () => {
     if (valid) {
       loading.value = true
       try {
-        await authStore.login(loginForm)
+        await authStore.login(loginForm.username, loginForm.password)
         
         ElMessage.success('¡Bienvenido a StudyFlow!')
         
@@ -116,7 +116,7 @@ const handleLogin = async () => {
       } catch (error) {
         console.error('Login error:', error)
         ElMessage.error(
-          error.response?.data?.detail || 
+          error.data?.detail || 
           'Error al iniciar sesión. Verifica tus credenciales.'
         )
       } finally {
