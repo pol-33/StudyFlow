@@ -107,7 +107,17 @@ class DocumentViewSet(viewsets.ModelViewSet):
         serializer.save(task_id=task_pk, file_name=file_name)
     
     def get_serializer_context(self):
-        """Add request to serializer context for building absolute URLs"""
+        """Add request and task to serializer context for validation and URL building"""
         context = super().get_serializer_context()
         context['request'] = self.request
+        
+        # Add task to context for duplicate file validation
+        task_pk = self.kwargs.get('task_pk')
+        if task_pk:
+            from .models import Task
+            try:
+                context['task'] = Task.objects.get(pk=task_pk)
+            except Task.DoesNotExist:
+                context['task'] = None
+        
         return context
