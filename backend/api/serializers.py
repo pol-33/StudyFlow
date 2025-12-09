@@ -94,10 +94,10 @@ class TaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
         fields = [
-            'id', 'title', 'description', 'created_at', 'due_date',
-            'priority', 'is_completed', 'project', 'documents', 'documents_count'
+            'id', 'title', 'description', 'created_at', 'updated_at', 'due_date',
+            'priority', 'is_completed', 'notification_sent', 'project', 'documents', 'documents_count'
         ]
-        read_only_fields = ['created_at', 'project']
+        read_only_fields = ['created_at', 'updated_at', 'notification_sent', 'project']
     
     def get_documents_count(self, obj):
         """Return the number of documents attached to this task"""
