@@ -84,3 +84,34 @@ After completing all steps, our Route 53 Hosted Zone is fully populated with all
 
 ![Final Registry State](images/changed_registries_v2.png)
 
+---
+
+## Phase 4: Requesting Production Access (Sandbox Exit)
+
+By default, new AWS accounts are placed in the **SES Sandbox**. This limits the account to 200 emails/24h and restricts sending only to verified email addresses (our own team). To enable the application to function properly for the demo, we had to request Production Access.
+
+### 1. Initiating the Request
+We accessed the "Account Dashboard" in the SES console and initiated the wizard to request production access.
+
+![Prepare Production Request](images/ses_prepare_production.png)
+
+### 2. Submitting Use Case Details
+We filled out the request form specifying:
+*   **Mail Type:** Transactional (strictly for application notifications, no marketing).
+*   **Website URL:** We provided our domain (`polplana.work`), even when the website was not still deployed.
+
+![Request Form](images/ses_request_production.png)
+
+### 3. Support Verification Process
+AWS Support opened a case to verify our intentions. They requested further details regarding how we handle bounces and list management to ensure we are not spammers. 
+
+![Support Ticket Opened](images/ses_support_ticket.png)
+
+We replied with a structured response detailing we are students working on a Cloud course in the UPC:
+
+![Reply to Support](images/ses_support_message.png)
+
+### 4. Approval
+AWS Trust & Safety team reviewed our justification and granted production access. Our sending quota was increased to **50,000 emails per day** and **14 emails per second**, and moving us outside of the SES Sandbox, allowing the *StudyFlow* application to operate without restrictions.
+
+![Approval Response](images/ses_okay_response.png)
