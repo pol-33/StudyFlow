@@ -1,9 +1,9 @@
 module "postgres" {
-  depends_on = [ kubernetes_config_map.postgres-initdb-config ]
-  source = "./module/postgres"
+  depends_on       = [kubernetes_config_map.postgres-initdb-config]
+  source           = "./module/postgres"
   namespace        = kubernetes_namespace.ns.metadata.0.name
-  instance-name = "postgres"
-  database-port = 5432
+  instance-name    = "postgres"
+  database-port    = 5432
   init-sql-configs = ["postgres-initdb-config"]
 }
 
