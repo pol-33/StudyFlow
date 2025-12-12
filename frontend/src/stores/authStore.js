@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { authAPI } from '@/services/api'
+import authService from '@/services/authService'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -15,17 +15,16 @@ export const useAuthStore = defineStore('auth', {
 
   actions: {
     async register(userData) {
-      try {
-        const response = await authAPI.register(userData)
+      const response = await authService.register(userData)
+      if (response.status >= 200 && response.status < 300) {
         return response.data
-      } catch (error) {
-        throw error
       }
+      throw response
     },
 
-    async login(credentials) {
-      try {
-        const response = await authAPI.login(credentials)
+    async login(username, password) {
+      const response = await authService.login(username, password)
+      if (response.status >= 200 && response.status < 300) {
         this.accessToken = response.data.access
         this.refreshToken = response.data.refresh
         
@@ -40,26 +39,23 @@ export const useAuthStore = defineStore('auth', {
         }
         
         return response.data
-      } catch (error) {
-        throw error
       }
+      throw response
     },
 
     async refreshAccessToken() {
-      try {
-        if (!this.refreshToken) {
-          throw new Error('No refresh token available')
-        }
-        
-        const response = await authAPI.refresh(this.refreshToken)
+      if (!this.refreshToken) {
+        throw new Error('No refresh token available')
+      }
+      
+      const response = await authService.refresh(this.refreshToken)
+      if (response.status >= 200 && response.status < 300) {
         this.accessToken = response.data.access
         localStorage.setItem('accessToken', response.data.access)
-        
         return response.data
-      } catch (error) {
-        this.logout()
-        throw error
       }
+      this.logout()
+      throw response
     },
 
     logout() {

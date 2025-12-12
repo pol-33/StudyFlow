@@ -1,6 +1,39 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import Project, Task, Document
+from .models import Project, Task, Document, UserProfile
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        fields = ['email_notifications_enabled']
+
+
+class UserSettingsSerializer(serializers.ModelSerializer):
+    """Serializer for User settings (username, email, notifications)"""
+    email_notifications_enabled = serializers.BooleanField(source='profile.email_notifications_enabled')
+
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'email_notifications_enabled']
+        read_only_fields = ['id']
+
+    def update(self, instance, validated_data):
+        profile_data = validated_data.pop('profile', {})
+        email_notifications_enabled = profile_data.get('email_notifications_enabled')
+
+        # Update User fields
+        instance.username = validated_data.get('username', instance.username)
+        instance.email = validated_data.get('email', instance.email)
+        instance.save()
+
+        # Update UserProfile fields
+        if email_notifications_enabled is not None:
+            profile, created = UserProfile.objects.get_or_create(user=instance)
+            profile.email_notifications_enabled = email_notifications_enabled
+            profile.save()
+
+        return instance
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -40,8 +73,8 @@ class DocumentSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Document
-        fields = ['id', 'file_name', 'file', 'file_url', 'uploaded_at', 'task']
-        read_only_fields = ['uploaded_at', 'task']
+        fields = ['id', 'file_name', 'file', 'file_url', 'uploaded_at', 'task', 'file_size']
+        read_only_fields = ['uploaded_at', 'task', 'file_size']
     
     def get_file_url(self, obj):
         """Return the URL of the file"""
@@ -51,6 +84,33 @@ class DocumentSerializer(serializers.ModelSerializer):
                 return request.build_absolute_uri(obj.file.url)
             return obj.file.url
         return None
+    
+    def validate(self, attrs):
+        """Validate that the file is not a duplicate."""
+        file = attrs.get('file')
+        task = self.context.get('task')  # Task from view context
+        
+        if file and task:
+            # Calculate hash of uploaded file
+            import hashlib
+            hash_sha256 = hashlib.sha256()
+            for chunk in file.chunks():
+                hash_sha256.update(chunk)
+            file_hash = hash_sha256.hexdigest()
+            file.seek(0)  # Reset file pointer
+            
+            # Check if a document with same hash exists in this task
+            duplicate = Document.objects.filter(
+                task=task,
+                file_hash=file_hash
+            ).first()
+            
+            if duplicate:
+                raise serializers.ValidationError({
+                    'file': f'This file has already been uploaded as "{duplicate.file_name}".'
+                })
+        
+        return attrs
 
 
 class TaskSerializer(serializers.ModelSerializer):
@@ -61,10 +121,10 @@ class TaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
         fields = [
-            'id', 'title', 'description', 'created_at', 'due_date',
-            'priority', 'is_completed', 'project', 'documents', 'documents_count'
+            'id', 'title', 'description', 'created_at', 'updated_at', 'due_date',
+            'priority', 'is_completed', 'notification_sent', 'project', 'documents', 'documents_count'
         ]
-        read_only_fields = ['created_at', 'project']
+        read_only_fields = ['created_at', 'updated_at', 'notification_sent', 'project']
     
     def get_documents_count(self, obj):
         """Return the number of documents attached to this task"""

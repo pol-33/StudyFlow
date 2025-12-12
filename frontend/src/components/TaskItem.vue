@@ -71,11 +71,17 @@
           <strong>Estado:</strong>
           <span>{{ task.is_completed ? 'Completada' : 'Pendiente' }}</span>
         </div>
+        <div v-if="task.due_date" class="detail-row">
+          <strong>Notificación:</strong>
+          <el-tag :type="task.notification_sent ? 'success' : 'info'" size="small">
+            {{ task.notification_sent ? 'Enviada' : 'Pendiente' }}
+          </el-tag>
+        </div>
         <div class="detail-row">
           <strong>Creada:</strong>
           <span>{{ formatDate(task.created_at) }}</span>
         </div>
-        <div v-if="task.updated_at" class="detail-row">
+        <div v-if="task.updated_at && task.updated_at !== task.created_at" class="detail-row">
           <strong>Actualizada:</strong>
           <span>{{ formatDate(task.updated_at) }}</span>
         </div>

@@ -195,12 +195,9 @@ const handleCreateTask = async () => {
 }
 
 const handleTaskUpdated = (updatedTask) => {
-  // El store ya se actualiza, solo mostramos mensaje
-  ElMessage.success('Tarea actualizada')
 }
 
 const handleTaskDeleted = (taskId) => {
-  ElMessage.success('Tarea eliminada')
 }
 
 // Recargar tareas cuando cambia el proyecto

@@ -1,12 +1,23 @@
-from rest_framework import viewsets, status, permissions
+from rest_framework import viewsets, status, permissions, generics
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from django.contrib.auth.models import User
 from .models import Project, Task, Document
 from .serializers import (
-    UserSerializer, ProjectSerializer, TaskSerializer, DocumentSerializer
+    UserSerializer, ProjectSerializer, TaskSerializer, DocumentSerializer, UserSettingsSerializer
 )
 from .permissions import IsOwner, IsProjectOwner, IsTaskOwner
+
+
+class UserSettingsView(generics.RetrieveUpdateAPIView):
+    """
+    API endpoint for retrieving and updating user settings.
+    """
+    serializer_class = UserSettingsSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user
 
 
 @api_view(['POST'])
@@ -96,7 +107,17 @@ class DocumentViewSet(viewsets.ModelViewSet):
         serializer.save(task_id=task_pk, file_name=file_name)
     
     def get_serializer_context(self):
-        """Add request to serializer context for building absolute URLs"""
+        """Add request and task to serializer context for validation and URL building"""
         context = super().get_serializer_context()
         context['request'] = self.request
+        
+        # Add task to context for duplicate file validation
+        task_pk = self.kwargs.get('task_pk')
+        if task_pk:
+            from .models import Task
+            try:
+                context['task'] = Task.objects.get(pk=task_pk)
+            except Task.DoesNotExist:
+                context['task'] = None
+        
         return context

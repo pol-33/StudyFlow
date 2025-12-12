@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework_nested import routers
-from .views import ProjectViewSet, TaskViewSet, DocumentViewSet, register_user
+from .views import ProjectViewSet, TaskViewSet, DocumentViewSet, register_user, UserSettingsView
 
 # Main router for projects
 router = routers.SimpleRouter()
@@ -17,6 +17,7 @@ tasks_router.register(r'documents', DocumentViewSet, basename='task-documents')
 urlpatterns = [
     # User registration endpoint
     path('auth/register/', register_user, name='register'),
+    path('auth/settings/', UserSettingsView.as_view(), name='user-settings'),
     
     # Include all router URLs
     path('', include(router.urls)),
