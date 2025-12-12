@@ -60,7 +60,7 @@ resource "kubernetes_config_map" "backend-config" {
         "DATABASE" = "postgresql"
         "DB_NAME" = var.db_name
         "DB_PASSWORD" = var.db_password
-        "DB_USERNAME" = var.db_username
+        "DB_USER" = var.db_username
         "DB_HOST" = var.db_host
         "DB_PORT" = var.db_port
         "AWS_ACCESS_KEY_ID" = var.aws_access_key_id

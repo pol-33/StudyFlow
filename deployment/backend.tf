@@ -3,6 +3,7 @@ module "backend" {
     instance_name = "backend"
     namespace = kubernetes_namespace.ns.metadata.0.name
     image_name = "${var.image_name}-backend"
+    depends_on = [ module.postgres ]
 
     # ENV variables
     secret_key = var.secret_key
@@ -16,8 +17,8 @@ module "backend" {
     db_name = var.db_name
     db_password = var.db_password
     db_username = var.db_username
-    db_host = var.db_host
-    db_port = var.db_port
+    db_host = module.postgres.database-host
+    db_port = module.postgres.database-port
 
     # AWS
     aws_access_key_id = var.aws_access_key_id

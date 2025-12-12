@@ -15,8 +15,8 @@ resource "kubernetes_config_map" "postgres-initdb-config" {
   data = {
     "postgres-initdb-config.sql" = <<-EOT
         CREATE USER ${var.db_username} WITH ENCRYPTED PASSWORD '${var.db_password}' SUPERUSER;
-        CREATE DATABASE ${var.db_username};
-        \c ${var.db_username} ${var.db_username}
+        CREATE DATABASE ${var.db_name};
+        \c ${var.db_name} ${var.db_username}
 
       EOT
   }

@@ -36,6 +36,17 @@ This document explains the purpose of the `deployment/` directory, how the local
 - Variables and defaults:
   - `deployment/variables.tf` declares Terraform variables such as `image_name`, backend env vars, and `vite_api_base_url` (deployment/variables.tf, deployment/variables.tf).
 
+### Shared Variables and Outputs
+
+- Shared variables (used by both backend and database):
+  - `db_name`, `db_username`, `db_password`, `db_port` (deployment/variables.tf:1, deployment/variables.tf:11, deployment/variables.tf:21).
+- Cross-file outputs consumed by backend:
+  - `module.postgres.database-host` and `module.postgres.database-port` (deployment/module/postgres/outputs.tf:5, deployment/module/postgres/outputs.tf:9).
+- Wiring:
+  - Backend module sets `DB_HOST` and `DB_PORT` from Postgres outputs (deployment/backend.tf).
+  - Postgres init SQL creates the database `db_name` and user `db_username` (deployment/db.tf:16).
+  - Resource order enforced with `depends_on = [ module.postgres ]` in backend (deployment/backend.tf).
+
 ### How `local_deployment.sh` operates
 
 - Location: `../local_deployment.sh`

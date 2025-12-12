@@ -44,7 +44,7 @@ variable "allowed_hosts" {
 }
 
 variable "cors_allowed_origins" {
-  default = "*"
+  default = "http://localhost:5173,http://127.0.0.1:5173"
   description = "The CORS allowed origins for the backend instance."
 }
 
