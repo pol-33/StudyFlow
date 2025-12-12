@@ -1,3 +1,8 @@
+variable "db_name" {
+  default = "studyflow"
+  description = "The name of the backend database."
+}
+
 variable "db_password" {
   default = "backend"
   description = "The password for the backend database user."
@@ -6,6 +11,16 @@ variable "db_password" {
 variable "db_username" {
   default = "backend"
   description = "The username for the backend database user."
+}
+
+variable "db_host" {
+  default = "db"
+  description = "The host for the backend database."
+}
+
+variable "db_port" {
+  default = "5432"
+  description = "The port for the backend database."
 }
 
 variable "image_name" {
@@ -46,4 +61,49 @@ variable "refresh_token_lifetime_days" {
 variable "vite_api_base_url" {
   default = "http://localhost"
   description = "The base URL for the backend API, used by the frontend to make requests."
+}
+
+variable "aws_access_key_id" {
+  default = "your_access_key"
+  description = "The AWS access key ID for the backend instance."
+}
+
+variable "aws_secret_access_key" {
+  default = "your_secret_key"
+  description = "The AWS secret access key for the backend instance."
+}
+
+variable "aws_default_region_name" {
+  default = "eu-west-2"
+  description = "The AWS default region name for the backend instance."
+}
+
+variable "aws_ses_region_name" {
+  default = "eu-west-3"
+  description = "The AWS SES region name for the backend instance."
+}
+
+variable "aws_ses_region_endpoint" {
+  default = "email.eu-west-3.amazonaws.com"
+  description = "The AWS SES region endpoint for the backend instance."
+}
+
+variable "default_from_email" {
+  default = "StudyFlow <noreply@polplana.work>"
+  description = "The default from email for the backend instance."
+}
+
+variable "use_s3" {
+  default = "False"
+  description = "The use S3 for the backend instance."
+}
+
+variable "aws_storage_bucket_name" {
+  default = "your-s3-bucket-name"
+  description = "The AWS S3 bucket name for the backend instance."
+}
+
+variable "aws_s3_region_name" {
+  default = "eu-south-2"
+  description = "The AWS S3 region name for the backend instance."
 }
