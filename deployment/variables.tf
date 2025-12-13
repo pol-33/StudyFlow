@@ -61,7 +61,7 @@ variable "refresh_token_lifetime_days" {
 }
 
 variable "vite_api_base_url" {
-  default     = "http://localhost"
+  default     = "http://a2afff947f9db45bab37ec355815d8fa-41931144.eu-south-2.elb.amazonaws.com"
   description = "The base URL for the backend API, used by the frontend to make requests."
 }
 

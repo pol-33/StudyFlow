@@ -150,6 +150,15 @@ apply_k8s_manifests_if_present
 
 echo "Deployment completed"
 
+echo "--- Installing Ingress Nginx ---"
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
+
+echo "--- Waiting for Ingress to be ready ---"
+kubectl wait --namespace ingress-nginx \
+  --for=condition=ready pod \
+  --selector=app.kubernetes.io/component=controller \
+  --timeout=180s
+  
 cd deployment
 
 terraform init

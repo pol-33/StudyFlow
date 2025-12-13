@@ -26,7 +26,7 @@ resource "kubernetes_deployment" "frontend" {
             container {
               image = "${var.image_name}:latest"
               name  = "${var.instance_name}"
-              image_pull_policy = "IfNotPresent"
+              image_pull_policy = "Always"
 
               env_from {
                 config_map_ref {

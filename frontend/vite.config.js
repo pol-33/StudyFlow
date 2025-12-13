@@ -4,6 +4,12 @@ import { fileURLToPath, URL } from 'node:url'
 
 // https://vite.dev/config/
 export default defineConfig({
+  server: {
+    host: '0.0.0.0', // 确保监听所有网卡
+    port: 5173,      // 确保端口对上
+    // 添加下面这行配置
+    allowedHosts: true
+  },
   plugins: [vue()],
   resolve: {
     alias: {
