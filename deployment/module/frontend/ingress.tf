@@ -3,36 +3,35 @@ resource "kubernetes_ingress_v1" "app" {
     name      = "app-ingress"
     namespace = var.namespace
     annotations = {
-      "kubernetes.io/ingress.class"                      = "nginx"
-      "nginx.ingress.kubernetes.io/enable-cors"          = "true"
-      "nginx.ingress.kubernetes.io/cors-allow-origin"    = "*"
-      "nginx.ingress.kubernetes.io/cors-allow-methods"   = "GET, POST, PUT, DELETE, OPTIONS"
-      "nginx.ingress.kubernetes.io/cors-allow-headers"   = "DNT,User-Agent,Authorization,Content-Type,Accept,Origin,Referer,Accept-Encoding"
-      "nginx.ingress.kubernetes.io/ssl-redirect"         = "false"
-      "nginx.ingress.kubernetes.io/rewrite-target"       = "/$2"
+      "kubernetes.io/ingress.class"                           = "nginx"
+      "nginx.ingress.kubernetes.io/enable-cors"              = "true"
+      "nginx.ingress.kubernetes.io/cors-allow-origin"        = "*"
+      "nginx.ingress.kubernetes.io/cors-allow-methods"       = "GET, POST, PUT, DELETE, OPTIONS"
+      "nginx.ingress.kubernetes.io/cors-allow-headers"       = "DNT,User-Agent,Authorization,Content-Type,Accept,Origin,Referer,Accept-Encoding"
+      "nginx.ingress.kubernetes.io/ssl-redirect"             = "false"
     }
   }
 
   spec {
     ingress_class_name = "nginx"
     rule {
-      http {
-        path {
-          path      = "/()(.*)"
-          path_type = "ImplementationSpecific"
-          backend {
-            service {
-              name = kubernetes_service.frontend-service.metadata[0].name
-              port {
-                number = 5173
+          http {
+            path {
+              path      = "/"
+              path_type = "Prefix"
+              backend {
+                service {
+                  name = kubernetes_service.frontend-service.metadata[0].name
+                  port {
+                    number = 5173
+                  }
+                }
               }
             }
-          }
-        }
 
         path {
-          path      = "/api(/|$)(.*)" 
-          path_type = "ImplementationSpecific"
+          path      = "/api"
+          path_type = "Prefix"
           backend {
             service {
               name = var.backend_service_name
