@@ -12,6 +12,6 @@ resource "kubernetes_service" "backend-service" {
       port        = 8000
       target_port = 8000
     }
-    type = "ClusterIP"
+    type = "LoadBalancer"
   }
 }
