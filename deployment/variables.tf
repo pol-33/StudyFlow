@@ -15,18 +15,18 @@ variable "db_username" {
 
 variable "db_host" {
   type        = string
-  default     = null
+  default     = ""
   description = "The host for the backend database."
 }
 
 variable "db_port" {
   type        = string
-  default     = null
+  default     = "5432"
   description = "The port for the backend database."
 }
 
 variable "image_name" {
-  default     = "2026_1-project-12_01_a"
+  default     = "770404291990.dkr.ecr.eu-south-2.amazonaws.com/studyflow"
   description = "The name of the docker images"
 }
 
@@ -108,4 +108,19 @@ variable "aws_storage_bucket_name" {
 variable "aws_s3_region_name" {
   default     = "eu-south-2"
   description = "The AWS S3 region name for the backend instance."
+}
+
+variable "aws_region" {
+  default     = "eu-south-2"
+  description = "AWS region for provider configuration."
+}
+
+variable "eks_cluster_name" {
+  default     = "studyflow"
+  description = "EKS cluster name to target for Kubernetes provider."
+}
+
+variable "kubernetes_namespace" {
+  default     = "studyflow"
+  description = "Kubernetes namespace to create/use in the target cluster."
 }

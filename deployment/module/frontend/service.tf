@@ -12,6 +12,6 @@ resource "kubernetes_service" "frontend-service" {
       port        = 5173
       target_port = 5173
     }
-    type = "ClusterIP"
+    type = "LoadBalancer"
   }
 }
