@@ -191,8 +191,13 @@ class Document(models.Model):
         when the Document instance is deleted.
         Works with both local and S3 storage.
         """
-        # Store file path before deletion for cleanup
-        file_path = self.file.path if self.file and hasattr(self.file, 'path') else None
+        # Store file path before deletion for cleanup (local storage only)
+        file_path = None
+        if self.file and not settings.USE_S3:
+            try:
+                file_path = self.file.path
+            except NotImplementedError:
+                file_path = None
         
         # Delete the file from storage (works with any storage backend)
         if self.file:
@@ -214,8 +219,13 @@ def delete_document_file(sender, instance, **kwargs):
     This handles cascading deletes (e.g., when a Task is deleted).
     Works with both local and S3 storage backends.
     """
-    # Store file path before deletion for cleanup
-    file_path = instance.file.path if instance.file and hasattr(instance.file, 'path') else None
+    # Store file path before deletion for cleanup (local storage only)
+    file_path = None
+    if instance.file and not settings.USE_S3:
+        try:
+            file_path = instance.file.path
+        except NotImplementedError:
+            file_path = None
     
     if instance.file:
         instance.file.delete(save=False)
@@ -243,8 +253,13 @@ def delete_old_file_on_update(sender, instance, **kwargs):
     # Check if the file has changed
     new_file = instance.file
     if old_file and old_file != new_file:
-        # Store old file path before deletion for cleanup
-        old_file_path = old_file.path if hasattr(old_file, 'path') else None
+        # Store old file path before deletion for cleanup (local storage only)
+        old_file_path = None
+        if not settings.USE_S3:
+            try:
+                old_file_path = old_file.path
+            except NotImplementedError:
+                old_file_path = None
         
         old_file.delete(save=False)
         
