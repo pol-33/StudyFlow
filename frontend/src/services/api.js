@@ -5,7 +5,11 @@ import router from '@/router'
 axios.interceptors.request.use(
     config => {
         config.headers['Accept'] = 'application/json'
-        config.headers['Content-Type'] = 'application/json'
+        
+        // Only set Content-Type to JSON if not already set (allows multipart/form-data for file uploads)
+        if (!config.headers['Content-Type']) {
+            config.headers['Content-Type'] = 'application/json'
+        }
         
         // Add auth token if logged in
         const authStore = useAuthStore()

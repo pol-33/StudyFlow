@@ -79,10 +79,19 @@ class DocumentSerializer(serializers.ModelSerializer):
     def get_file_url(self, obj):
         """Return the URL of the file"""
         if obj.file:
+            # For S3 storage, obj.file.url already returns a complete signed URL
+            # Don't use build_absolute_uri as it can break the signed URL
+            file_url = obj.file.url
+            
+            # Check if it's already an absolute URL (S3 case)
+            if file_url.startswith('http://') or file_url.startswith('https://'):
+                return file_url
+            
+            # For local storage, build absolute URI
             request = self.context.get('request')
             if request is not None:
-                return request.build_absolute_uri(obj.file.url)
-            return obj.file.url
+                return request.build_absolute_uri(file_url)
+            return file_url
         return None
     
     def validate(self, attrs):
