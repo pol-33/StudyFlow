@@ -98,7 +98,8 @@ if USE_S3:
     AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
     AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')
     AWS_S3_REGION_NAME = os.getenv('AWS_S3_REGION_NAME', 'eu-south-2')
-    AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com'
+    # NOTE: Do NOT set AWS_S3_CUSTOM_DOMAIN when using querystring_auth
+    # Setting custom_domain disables signed URLs
     
     # S3 Storage Settings
     AWS_S3_OBJECT_PARAMETERS = {
@@ -110,15 +111,32 @@ if USE_S3:
     AWS_QUERYSTRING_EXPIRE = 3600  # URL expiration time in seconds
     
     # Use S3 for media files (Django 5.x compatible)
+    # Pass options directly to the storage backend
+    # Do NOT set custom_domain - it disables signed URLs
+    # Set endpoint_url to use regional endpoint for eu-south-2
+    AWS_S3_ENDPOINT_URL = f'https://s3.{AWS_S3_REGION_NAME}.amazonaws.com'
+    
     STORAGES = {
         "default": {
             "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+            "OPTIONS": {
+                "access_key": AWS_ACCESS_KEY_ID,
+                "secret_key": AWS_SECRET_ACCESS_KEY,
+                "bucket_name": AWS_STORAGE_BUCKET_NAME,
+                "region_name": AWS_S3_REGION_NAME,
+                "endpoint_url": AWS_S3_ENDPOINT_URL,
+                "default_acl": None,
+                "querystring_auth": True,
+                "querystring_expire": 3600,
+                "file_overwrite": False,
+                "object_parameters": {"CacheControl": "max-age=86400"},
+            },
         },
         "staticfiles": {
             "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
         },
     }
-    MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/'
+    MEDIA_URL = f'https://{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com/'
 else:
     # Local Storage Configuration
     STORAGES = {
