@@ -5,7 +5,7 @@ resource "kubernetes_cron_job_v1" "notification_cronjob" {
   }
 
   spec {
-    schedule                      = "*/5 * * * *"  # Every 5 minutes
+    schedule                      = "* * * * *"  # Every 1 minute
     concurrency_policy           = "Forbid"        # Don't run if previous still running
     successful_jobs_history_limit = 3
     failed_jobs_history_limit     = 3
